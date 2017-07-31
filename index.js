@@ -11,10 +11,6 @@ io.on("connection",function(socket){
 	console.log('co nguoi ket noi '+socket.id);
 	socket.on("disconnect",function(){
 		console.log("Ngat ket noi "+socket.id);
-		listuser.splice(
-			listuser.indexOf(socket.username),1
-		);
-		socket.broadcast.emit("danhsach_username",listuser);
 	});
 	socket.on("data",function(data){
 		//info=JSON.parse(data);
