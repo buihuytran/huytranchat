@@ -3,9 +3,9 @@
 <head>
 	<title>DEMO CHAT</title>
 	<script type="text/javascript" src="jquery-1.8.2.min.js"></script>
-	<script type="text/javascript" src="https://nguoiyeuxa.herokuapp.com/socket.io/socket.io.js"></script>
+	<script type="text/javascript" src="https://huytrantest.herokuapp.com/socket.io/socket.io.js"></script>
 	<script type="text/javascript">
-		var socket = io("https://nguoiyeuxa.herokuapp.com");
+		var socket = io("https://huytrantest.herokuapp.com");
 		socket.on("data",function(data){
 			info=JSON.parse(data);
 			$('.list_chat').append(info.username+': '+info.noi_dung+'<br>');
