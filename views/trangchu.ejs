@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>DEMO CHAT</title>
+	<script type="text/javascript" src="jquery-1.8.2.min.js"></script>
+	<script type="text/javascript" src="https://nguoiyeuxa.herokuapp.com/socket.io/socket.io.js"></script>
+	<script type="text/javascript">
+		var socket = io("https://nguoiyeuxa.herokuapp.com");
+		socket.on("data",function(data){
+			info=JSON.parse(data);
+			$('.list_chat').append(info.username+': '+info.noi_dung+'<br>');
+		});
+		socket.on("dangky_thatbai",function(){
+			alert('Đăng ký thất bại');
+		});
+		socket.on("dangky_thanhcong",function(data){
+			alert("Đăng ký thành công");
+			$('.khung_dangky').hide();
+			$('.khung_chat').show();
+			$('.info').html(data);
+			$('input[name=username]').val(data);
+		});
+		socket.on("danhsach_username",function(data){
+			$('.list_username').html("");
+			data.forEach(function(i){
+				$('.list_username').append(i+"<br>");
+
+			});
+
+		});
+		socket.on("go_chu",function(data){
+			$('.info_text').html(data);
+		});
+		socket.on("gung_go_chu",function(data){
+			$('.info_text').html(data);
+		});
+		$(document).ready(function(){
+			$('input[name=submit]').click(function(){
+				noi_dung=$('input[name=noi_dung]').val();
+				if(noi_dung.length<1){
+					alert('Vui lòng nhập nội dung');
+				}else{
+					socket.emit('data',noi_dung);
+					$('input[name=noi_dung]').val('');
+				}
+			});
+			$('input[name=submit_reg]').click(function(){
+				username_reg=$('input[name=username_reg]').val();
+				if(username_reg.length<4){
+					alert('Vui lòng nhập dài từ 4 ký tự');
+				}else{
+					socket.emit('submit_reg',username_reg);
+				}
+
+			});
+			$('.khung_info a').click(function(){
+				socket.emit("logout");
+				$('.khung_dangky').show();
+				$('.khung_chat').hide();
+			});
+			$('input[name=noi_dung]').keypress(function(e){
+				if(e.which == 13) {
+					noi_dung=$('input[name=noi_dung]').val();
+					if(noi_dung.length<1){
+						alert('Vui lòng nhập nội dung');
+					}else{
+						socket.emit('data',noi_dung);
+						$('input[name=noi_dung]').val('');
+						$('.info_text').html('');
+					}
+				}
+			});
+			$('input[name=noi_dung]').keyup(function(e){
+				if(e.which == 13) {
+					socket.emit('gung_go_chu');
+				}else{
+					socket.emit('go_chu');
+				}
+			});
+			$('input[name=noi_dung]').focusout(function(){
+				socket.emit('gung_go_chu');
+			});
+		});
+	</script>
+</head>
+<body>
+<style type="text/css">
+	.khung_chat{
+		position: relative;
+		margin: auto;
+		width: 450px;
+		height: 550px;
+		border: 1px solid #f60;
+		display: none;
+	}
+	.khung_noidung{
+		width: 430px;
+		height: 450px;
+		border-bottom: 1px solid #f60;
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+	.list_chat{
+		float: left;
+		width: 270px;
+		border: 1px solid #f60;
+		height: 420px;
+		overflow-y: auto;
+		margin-top: 10px;
+		padding-left: 10px;
+		padding-top: 10px;
+	}
+	.list_username{
+		float: right;
+		width: 130px;
+		height: 420px;
+		border: 1px solid #f60;
+		overflow-y: auto;
+		margin-top: 10px;
+		padding-top: 10px;
+		padding-left: 10px;
+	}
+	.khung_tinnhan{
+		width: 100%;
+		height: 35px;
+	}
+	input[name=noi_dung]{
+		float: left;
+		width: 350px;
+		height: 35px;
+		border: 1px solid #f60;
+		margin-top: 5px;
+		margin-left: 10px;
+		text-indent: 10px;
+	}
+	input[name=username]{
+		float: left;
+		width: 120px;
+		height: 35px;
+		border: 1px solid #f60;
+		margin-top: 5px;
+		margin-left: 10px;
+		text-indent: 10px;
+	}
+	input[name=submit]{
+		float: left;
+		margin-left: 6px;
+		background: #f60;
+		color: #fff;
+		height: 35px;
+		padding-left: 15px;
+		padding-right: 15px;
+		border: none;
+		margin-top: 6px;
+		cursor: pointer;
+	}
+	.khung_info{
+		height: 45px;
+		width: 420px;
+		line-height: 45px;
+		text-align: right;
+		padding-right: 30px;
+	}
+	.khung_info a{
+		text-decoration: none;
+	}
+	.khung_dangky{
+		position: relative;
+		margin: auto;
+		width: 450px;
+		margin-top: 50px;
+	}
+	.khung_dangky h1{
+		color: #f60;
+		font-size: 18px;
+		text-transform: uppercase;
+	}
+	.khung_dangky input[name=username_reg]{
+		height: 35px;
+		width: 250px;
+		border: 1px solid #f60;
+		text-indent: 10px;
+	}
+	.khung_dangky input[name=submit_reg]{
+		height: 35px;
+		padding-left: 15px;
+		padding-right: 15px;
+		background: #f60;
+		color: #fff;
+		border: 1px solid #f60;
+		cursor: pointer;
+	}
+	.info_text{
+		float: left;
+		height: 45px;
+		line-height: 45px;
+		padding-left: 10px;
+	}
+</style>
+<div class="khung_dangky">
+	<h1>Đăng Ký Tài Khoản</h1>
+	<input type="text" name="username_reg" placeholder="Nhập tài khoản">
+	<input type="button" name="submit_reg" value="Đăng Ký">
+</div>
+<div class="khung_chat">
+	<div class="info_text"></div>
+	<div class="khung_info">Xin chào, <span class="info">Nguyễn Long!</span> | <a href="javascript:;">Đăng Xuất</a></div>
+	<div class="khung_noidung">
+		<div class="list_chat"></div>
+		<div class="list_username"></div>
+	</div>
+	<div class="khung_tinhan">
+		<input type="text" placeholder="Nhập nội dung..." name="noi_dung">
+		<input type="button" name="submit" value="Gửi Tin">
+	</div>
+</div>
+</body>
+</html>
